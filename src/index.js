@@ -15,5 +15,3 @@ Object
   .forEach(name => { Vue.component(name, Components[name]) })
 
 export default Components
-export Components.Carousel as Carousel
-export Components.HooperCarousel as HooperCarousel
