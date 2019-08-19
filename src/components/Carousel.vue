@@ -1,24 +1,29 @@
 <template>
-    <div class="card-carousel"
-      @mouseover="stopTimer"
-      @mouseleave="restartTimer">
-      <div class="card-img">
-        <img :src="currentImage" alt="currentImage.title">
-        <div class="actions">
-          <span @click="prevImage" class="prev">
-            &#8249;
-          </span>
-          <span @click="nextImage" class="next">
-            &#8250;
-          </span>
-        </div>
+  <div class="card-carousel"
+    @mouseover="stopTimer"
+    @mouseleave="restartTimer">
+    <div class="card-img">
+      <img class="fade" :src="currentImage" alt="currentImage.title">
+      <div class="actions">
+        <span @click="prevImage" class="prev">
+          &#8249;
+        </span>
+        <span @click="nextImage" class="next">
+          &#8250;
+        </span>
       </div>
     </div>
+  </div>
 </template>
 
 <script>
 export default {
   name: 'Carousel',
+  props: {
+    startingImage: Number,
+    images: Array,
+    autoSlideInterval: Number
+  },
   data () {
     return {
       // Index of the active image
@@ -28,11 +33,7 @@ export default {
       // If the timer is stopped e.g. when hovering over the carousel
       stopSlider: false,
       // Hold the time left until changing to the next image
-      timeLeft: 0,
-      // Hold the interval so we can clear it when needed
-      timerInterval: null,
-      // Every 10ms decrease the timeLeft
-      countdownInterval: 10
+      timeLeft: 0
     }
   },
   computed: {
@@ -40,7 +41,6 @@ export default {
     // and is the reason why we don't have to worry about the
     //  src image getting updated
     currentImage () {
-      // this.timeLeft = this.autoSlideInterval
       return this.images[this.activeImage].src
     }
   },
@@ -87,19 +87,8 @@ export default {
     restartTimer () {
       this.stopSlider = false
       clearInterval(this.timerInterval)
-      this.startCountdown()
+      // this.startCountdown()
       this.startTimer(this.timeLeft)
-    },
-    // Start countdown from 'autoSlideInterval' to 0
-    startCountdown () {
-      // if (!this.showProgressBar) return
-      var self = this
-      this.timerInterval = setInterval(function () {
-        self.timeLeft -= self.countdownInterval
-        if (self.timeLeft <= 0) {
-          self.timeLeft = self.autoSlideInterval
-        }
-      }, this.countdownInterval)
     }
   },
   created () {
@@ -110,16 +99,12 @@ export default {
       this.activeImage = this.startingImage
     }
     // Check if autoSlideInterval prop was given and if it is a positive number
-    if (this.autoSlideInterval &&
-      this.autoSlideInterval > this.countdownInterval) {
+    if (this.autoSlideInterval) {
       // Start the timer to go to the next image
       this.startTimer(this.autoSlideInterval)
       this.timeLeft = this.autoSlideInterval
-      //  Start countdown to show the progressbar
-      this.startCountdown()
     }
-  },
-  props: ['startingImage', 'images', 'autoSlideInterval', 'showProgressBar']
+  }
 }
 </script>
 
@@ -136,6 +121,20 @@ export default {
   margin: 0 auto;
   width: 100%;
   max-height: fit-content;
+}
+
+/* Fading animation */
+.fade {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fade;
+  animation-duration: 1s;
+}
+
+/* Standard syntax */
+@keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
 }
 
 .actions {
